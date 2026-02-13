@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>TRACEFARMERS</title>
+<style>
+body { font-family: Arial; text-align: center; padding: 40px; background:#eef7ee; }
+.box { background:white; padding:20px; width:420px; margin:auto; border-radius:10px; box-shadow:0 0 10px gray;}
+button { padding:10px 20px; margin:10px; }
+input { margin:5px; padding:5px; }
+#userSection, #loginSection, #editSection { display:none; }
+</style>
+</head>
+<body>
+
+<h1>🌾 TRACEFARMERS</h1>
+
+<div class="box">
+
+<button onclick="showUser()">User</button>
+<button onclick="showInspectorLogin()">Inspector</button>
+
+<div id="userSection">
+<h3>Crop Details</h3>
+<p><b>Batch:</b> <span id="batch"></span></p>
+<p><b>Location:</b> <span id="location"></span></p>
+<p><b>Soil:</b> <span id="soil"></span>%</p>
+<p><b>Temp:</b> <span id="temp"></span>°C</p>
+<p><b>Harvest:</b> <span id="harvest"></span></p>
+<p><b>Transport:</b> <span id="transport"></span></p>
+<p><b>Retailer:</b> <span id="retailer"></span></p>
+<p><b>Updated:</b> <span id="timestamp"></span></p>
+</div>
+
+<div id="loginSection">
+<h3>Inspector Login</h3>
+Employee ID: <input id="empid"><br>
+Password: <input type="password" id="password"><br>
+<button onclick="login()">Login</button>
+</div>
+
+<div id="editSection">
+<h3>Edit Data</h3>
+Batch: <input id="editBatch"><br>
+Location: <input id="editLocation"><br>
+Soil: <input id="editSoil"><br>
+Temp: <input id="editTemp"><br>
+Harvest: <input id="editHarvest"><br>
+Transport: <input id="editTransport"><br>
+Retailer: <input id="editRetailer"><br>
+<button onclick="saveData()">Save Changes</button>
+</div>
+
+</div>
+
+<script>
+
+const API = "https://peritectic-cristine-unvalorously.ngrok-free.dev/";
+
+async function showUser(){
+document.getElementById("userSection").style.display="block";
+document.getElementById("loginSection").style.display="none";
+document.getElementById("editSection").style.display="none";
+
+const res = await fetch(API + "/get_data");
+const data = await res.json();
+
+document.getElementById("batch").innerText=data.batch;
+document.getElementById("location").innerText=data.location;
+document.getElementById("soil").innerText=data.soil;
+document.getElementById("temp").innerText=data.temp;
+document.getElementById("harvest").innerText=data.harvest;
+document.getElementById("transport").innerText=data.transport;
+document.getElementById("retailer").innerText=data.retailer;
+document.getElementById("timestamp").innerText=data.timestamp;
+}
+
+function showInspectorLogin(){
+document.getElementById("loginSection").style.display="block";
+document.getElementById("userSection").style.display="none";
+document.getElementById("editSection").style.display="none";
+}
+
+function login(){
+document.getElementById("editSection").style.display="block";
+}
+
+async function login(){
+
+const response = await fetch(API + "/update_data",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({
+empid:document.getElementById("empid").value,
+password:document.getElementById("password").value,
+batch:"",
+location:"",
+soil:"",
+temp:"",
+harvest:"",
+transport:"",
+retailer:""
+})
+});
+
+if(response.status === 401){
+alert("Invalid Credentials");
+return;
+}
+
+document.getElementById("editSection").style.display="block";
+document.getElementById("loginSection").style.display="none";
+
+}
+
+
+</script>
+
+</body>
+</html>
